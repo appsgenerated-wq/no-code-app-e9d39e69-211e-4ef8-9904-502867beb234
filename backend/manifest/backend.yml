@@ -1,0 +1,33 @@
+name: AppleDex
+description: An application to catalog and manage apple varieties.
+
+entities:
+  User:
+    authenticable: true
+    properties:
+      - name: string
+      - { name: email, type: email, validation: { required: true, unique: true } }
+      - { name: role, type: choice, options: { values: [admin, user], default: user } }
+    access_policies:
+      - role: admin
+        permissions: [create, read, update, delete]
+      - role: user
+        permissions: [read, update]
+        condition: "user.id === id"
+
+  AppleVariety:
+    properties:
+      - { name: title, type: string, validation: { required: true } }
+      - { name: description, type: text }
+      - { name: origin, type: string }
+      - { name: tastingNotes, type: text }
+      - { name: harvestDate, type: date }
+      - { name: image, type: image, options: { sizes: { thumbnail: { width: 400, height: 300 } } } }
+    belongsTo:
+      - { name: owner, entity: User }
+    access_policies:
+      - role: admin
+        permissions: [create, read, update, delete]
+      - role: user
+        permissions: [create, read, update, delete]
+        condition: "user.id === owner.id"
